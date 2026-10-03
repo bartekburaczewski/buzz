@@ -5,7 +5,8 @@ No source changes vs upstream.
 
 - Coolify Application, build pack `dockercompose`, base directory `/deploy/coolify`,
   compose file `docker-compose.yaml` (Coolify default), branch `deploy`. No domain, no Traefik.
-- Relay is published only on the Tailscale IP: `ws://100.105.137.33:3000`.
+- Relay is published only on the Tailscale IP: `ws://100.105.137.33:3000`;
+  the device-pairing sidecar (`pair-relay`) on `ws://100.105.137.33:5000`.
 - Image is pinned (`ghcr.io/block/buzz:sha-<7>`). Update = bump the tag in
   `docker-compose.yaml`, commit, push to `deploy`; Coolify redeploys.
 - Secrets are Coolify magic variables (`SERVICE_PASSWORD_64_*`, `SERVICE_HEX_64_*`,

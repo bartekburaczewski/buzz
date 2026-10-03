@@ -30,6 +30,8 @@ services:
       BUZZ_S3_SECRET_KEY: ${SERVICE_PASSWORD_64_MINIO}
       BUZZ_S3_BUCKET: buzz-media
       BUZZ_GIT_REPO_PATH: /data/git
+      # Device pairing (QR) sidecar below; upstream compose omits it (block/buzz#7721).
+      BUZZ_PAIRING_RELAY_URL: ws://100.105.137.33:5000
     ports:
       - "100.105.137.33:3000:3000"
     volumes:
@@ -54,6 +56,23 @@ services:
       timeout: 3s
       retries: 12
       start_period: 30s
+    restart: unless-stopped
+
+  pair-relay:
+    # Pairing WebSocket for linking devices (QR flow). Same pinned image as the
+    # relay; the binary ships in it but upstream compose never starts it.
+    image: ghcr.io/block/buzz:sha-33f54de
+    entrypoint: ["/usr/local/bin/buzz-pair-relay"]
+    environment:
+      BUZZ_PAIR_RELAY_BIND_ADDR: 0.0.0.0:5000
+    ports:
+      - "100.105.137.33:5000:5000"
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'exec 3<>/dev/tcp/127.0.0.1/5000'"]
+      interval: 10s
+      timeout: 3s
+      retries: 6
+      start_period: 5s
     restart: unless-stopped
 
   postgres:

@@ -5,8 +5,12 @@ No source changes vs upstream.
 
 - Coolify Application, build pack `dockercompose`, base directory `/deploy/coolify`,
   compose file `docker-compose.yaml` (Coolify default), branch `deploy`. No domain, no Traefik.
-- Relay is published only on the Tailscale IP: `ws://100.105.137.33:3000`;
-  the device-pairing sidecar (`pair-relay`) on `ws://100.105.137.33:5000`.
+- Containers publish only on the Tailscale IP (`100.105.137.33:3000` relay,
+  `:5000` pair-relay). Clients connect over HTTPS through Tailscale Serve on the
+  host: `wss://ai-assistant.taild75039.ts.net:8443` (relay) and `:8444` (pairing).
+  The community row in Postgres is keyed by that host (`ai-assistant.taild75039.ts.net:8443`);
+  changing `RELAY_URL` needs `UPDATE communities SET host=...` first, or the relay
+  bootstraps a new empty community.
 - Image is pinned (`ghcr.io/block/buzz:sha-<7>`). Update = bump the tag in
   `docker-compose.yaml`, commit, push to `deploy`; Coolify redeploys.
 - Secrets are Coolify magic variables (`SERVICE_PASSWORD_64_*`, `SERVICE_HEX_64_*`,
